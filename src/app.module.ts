@@ -13,6 +13,7 @@ import { AttachmentsModule } from './modules/attachments/attachments.module.js';
 import { ResponsiblesModule } from './modules/responsibles/responsibles.module.js';
 import { WhatsappModule } from './modules/whatsapp/whatsapp.module.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
 
 @Module({
@@ -31,6 +32,7 @@ import { TasksModule } from './modules/tasks/tasks.module.js';
     ResponsiblesModule,
     WhatsappModule,
     HealthModule,
+    DashboardModule,
     TasksModule,
   ],
 })
