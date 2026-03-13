@@ -12,12 +12,12 @@ export class TimeEntriesRepository {
     private readonly repo: Repository<TimeEntry>,
   ) {}
 
-  async findByTaskPaginated(taskId: string, query: PaginationQueryDto): Promise<PaginatedResult<TimeEntry>> {
+  async findByTicketPaginated(ticketId: string, query: PaginationQueryDto): Promise<PaginatedResult<TimeEntry>> {
     const { page, limit } = query;
     const skip = (page - 1) * limit;
 
     const [data, total] = await this.repo.findAndCount({
-      where: { taskId },
+      where: { ticketId },
       skip,
       take: limit,
       order: { loggedAt: 'DESC' },
@@ -51,11 +51,20 @@ export class TimeEntriesRepository {
     await this.repo.delete(id);
   }
 
+  async getTotalMinutesByTicket(ticketId: string): Promise<number> {
+    const result = await this.repo
+      .createQueryBuilder('te')
+      .select('COALESCE(SUM(te.minutes), 0)', 'total')
+      .where('te.ticket_id = :ticketId', { ticketId })
+      .getRawOne();
+
+    return parseInt(result?.total ?? '0', 10);
+  }
+
   async getTotalMinutesByClientAndMonth(clientId: string, year: number, month: number): Promise<number> {
     const result = await this.repo
       .createQueryBuilder('te')
-      .innerJoin('te.task', 'task')
-      .innerJoin('task.ticket', 'ticket')
+      .innerJoin('te.ticket', 'ticket')
       .select('COALESCE(SUM(te.minutes), 0)', 'total')
       .where('ticket.clientId = :clientId', { clientId })
       .andWhere('EXTRACT(YEAR FROM te.logged_at) = :year', { year })

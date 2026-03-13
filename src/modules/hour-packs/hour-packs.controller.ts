@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -20,6 +21,18 @@ import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard.js';
 @Controller('hour-packs')
 export class HourPacksController {
   constructor(private readonly hourPacksService: HourPacksService) {}
+
+  @Get('audits')
+  @ApiOperation({ summary: 'Get all audit logs (paginated)' })
+  getAllAudits(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.hourPacksService.getAllAudits(
+      parseInt(page ?? '1', 10) || 1,
+      parseInt(limit ?? '20', 10) || 20,
+    );
+  }
 
   @Get('by-client/:clientId')
   @ApiOperation({ summary: 'Get hour pack for a client' })

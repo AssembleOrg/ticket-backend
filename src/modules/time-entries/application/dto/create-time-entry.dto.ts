@@ -16,7 +16,7 @@ export class CreateTimeEntryDto {
   @IsString()
   loggedBy: string;
 
-  @ApiProperty({ example: 'uuid-de-la-tarea' })
+  @ApiProperty({ example: 'uuid-del-ticket' })
   @IsUUID()
-  taskId: string;
+  ticketId: string;
 }

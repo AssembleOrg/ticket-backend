@@ -13,8 +13,11 @@ import {
 } from 'typeorm';
 import { Client } from '../../../clients/domain/entities/client.entity.js';
 import { Project } from '../../../projects/domain/entities/project.entity.js';
+import { Responsible } from '../../../responsibles/domain/entities/responsible.entity.js';
 import { TicketComment } from '../../../comments/domain/entities/comment.entity.js';
 import { Attachment } from '../../../attachments/domain/entities/attachment.entity.js';
+import { TimeEntry } from '../../../time-entries/domain/entities/time-entry.entity.js';
+import { Task } from '../../../tasks/domain/entities/task.entity.js';
 import { TicketStatus } from '../enums/ticket-status.enum.js';
 import { TicketPriority } from '../enums/ticket-priority.enum.js';
 
@@ -57,11 +60,24 @@ export class Ticket {
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
+  @Column({ name: 'responsible_id', nullable: true })
+  responsibleId: string | null;
+
+  @ManyToOne(() => Responsible, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'responsible_id' })
+  responsible: Responsible;
+
   @OneToMany(() => TicketComment, (comment) => comment.ticket)
   comments: TicketComment[];
 
   @OneToMany(() => Attachment, (attachment) => attachment.ticket)
   attachments: Attachment[];
+
+  @OneToMany(() => TimeEntry, (entry) => entry.ticket)
+  timeEntries: TimeEntry[];
+
+  @OneToMany(() => Task, (task) => task.ticket)
+  tasks: Task[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

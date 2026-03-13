@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service.js';
@@ -25,6 +25,28 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(dto.email, dto.password);
+
+    res.cookie('access_token', result.accessToken, COOKIE_OPTIONS);
+    res.cookie('refresh_token', result.refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 3600 * 1000, // 7 days
+    });
+
+    return result;
+  }
+
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access token using refresh token cookie' })
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = (req as any).cookies?.refresh_token;
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token');
+    }
+
+    const result = await this.authService.refresh(refreshToken);
 
     res.cookie('access_token', result.accessToken, COOKIE_OPTIONS);
     res.cookie('refresh_token', result.refreshToken, {

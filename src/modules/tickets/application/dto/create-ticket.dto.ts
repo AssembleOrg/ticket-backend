@@ -23,4 +23,9 @@ export class CreateTicketDto {
   @ApiProperty({ example: 'uuid-del-proyecto' })
   @IsUUID()
   projectId: string;
+
+  @ApiPropertyOptional({ example: 'uuid-del-responsable' })
+  @IsOptional()
+  @IsUUID()
+  responsibleId?: string;
 }

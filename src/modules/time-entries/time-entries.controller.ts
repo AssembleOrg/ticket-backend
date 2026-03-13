@@ -22,13 +22,19 @@ import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard.js';
 export class TimeEntriesController {
   constructor(private readonly timeEntriesService: TimeEntriesService) {}
 
-  @Get('by-task/:taskId')
-  @ApiOperation({ summary: 'Get time entries for a task (paginated)' })
-  findByTask(
-    @Param('taskId', ParseUUIDPipe) taskId: string,
+  @Get('by-ticket/:ticketId')
+  @ApiOperation({ summary: 'Get time entries for a ticket (paginated)' })
+  findByTicket(
+    @Param('ticketId', ParseUUIDPipe) ticketId: string,
     @Query() query: PaginationQueryDto,
   ) {
-    return this.timeEntriesService.findByTask(taskId, query);
+    return this.timeEntriesService.findByTicket(ticketId, query);
+  }
+
+  @Get('by-ticket/:ticketId/total')
+  @ApiOperation({ summary: 'Get total minutes logged for a ticket' })
+  getTotalByTicket(@Param('ticketId', ParseUUIDPipe) ticketId: string) {
+    return this.timeEntriesService.getTotalMinutesByTicket(ticketId);
   }
 
   @Post()

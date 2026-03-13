@@ -23,6 +23,7 @@ export class TicketsRepository {
       .createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.client', 'client')
       .leftJoinAndSelect('ticket.project', 'project')
+      .leftJoinAndSelect('ticket.responsible', 'responsible')
       .orderBy('ticket.createdAt', 'DESC')
       .skip(skip)
       .take(limit);
@@ -53,14 +54,21 @@ export class TicketsRepository {
   async findById(id: string): Promise<Ticket | null> {
     return this.repo.findOne({
       where: { id },
-      relations: ['client', 'project', 'comments'],
+      relations: [
+        'client',
+        'project',
+        'responsible',
+        'comments',
+        'attachments',
+        'timeEntries',
+      ],
     });
   }
 
   async findByCode(code: string): Promise<Ticket | null> {
     return this.repo.findOne({
       where: { code },
-      relations: ['client', 'project', 'comments'],
+      relations: ['client', 'project', 'responsible', 'comments'],
     });
   }
 

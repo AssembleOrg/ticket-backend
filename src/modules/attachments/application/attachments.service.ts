@@ -33,7 +33,19 @@ export class AttachmentsService {
   ) {}
 
   async findByTicket(ticketId: string, query: PaginationQueryDto) {
-    return this.attachmentsRepository.findByTicketPaginated(ticketId, query);
+    const result = await this.attachmentsRepository.findByTicketPaginated(ticketId, query);
+
+    const supabase = this.supabaseService.getClient();
+    const dataWithUrls = await Promise.all(
+      result.data.map(async (attachment) => {
+        const { data } = await supabase.storage
+          .from(BUCKET_NAME)
+          .createSignedUrl(attachment.storagePath, 3600);
+        return { ...attachment, url: data?.signedUrl ?? null };
+      }),
+    );
+
+    return { ...result, data: dataWithUrls };
   }
 
   async upload(

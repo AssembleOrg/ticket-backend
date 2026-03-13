@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Task } from '../domain/entities/task.entity.js';
+import { Responsible } from '../domain/entities/responsible.entity.js';
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto.js';
 import { PaginatedResult } from '../../../common/interfaces/paginated-result.interface.js';
 
 @Injectable()
-export class TasksRepository {
+export class ResponsiblesRepository {
   constructor(
-    @InjectRepository(Task)
-    private readonly repo: Repository<Task>,
+    @InjectRepository(Responsible)
+    private readonly repo: Repository<Responsible>,
   ) {}
 
-  async findByTicketPaginated(ticketId: string, query: PaginationQueryDto): Promise<PaginatedResult<Task>> {
+  async findAllPaginated(query: PaginationQueryDto): Promise<PaginatedResult<Responsible>> {
     const { page, limit } = query;
     const skip = (page - 1) * limit;
 
     const [data, total] = await this.repo.findAndCount({
-      where: { ticketId },
       skip,
       take: limit,
-      order: { createdAt: 'ASC' },
+      order: { name: 'ASC' },
     });
 
     const totalPages = Math.ceil(total / limit);
@@ -38,18 +37,18 @@ export class TasksRepository {
     };
   }
 
-  async findById(id: string): Promise<Task | null> {
+  async findById(id: string): Promise<Responsible | null> {
     return this.repo.findOne({ where: { id } });
   }
 
-  async create(data: Partial<Task>): Promise<Task> {
+  async create(data: Partial<Responsible>): Promise<Responsible> {
     const entity = this.repo.create(data);
     return this.repo.save(entity);
   }
 
-  async update(id: string, data: Partial<Task>): Promise<Task> {
+  async update(id: string, data: Partial<Responsible>): Promise<Responsible> {
     await this.repo.update(id, data);
-    return this.findById(id) as Promise<Task>;
+    return this.findById(id) as Promise<Responsible>;
   }
 
   async softDelete(id: string): Promise<void> {

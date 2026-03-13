@@ -77,4 +77,14 @@ export class HourPacksRepository {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async getAllAudits(page = 1, limit = 20): Promise<{ data: HourPackAudit[]; total: number }> {
+    const [data, total] = await this.auditRepo.findAndCount({
+      relations: ['hourPack', 'hourPack.client'],
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total };
+  }
 }

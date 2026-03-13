@@ -100,7 +100,23 @@ export class HourPacksService {
       updateData.active = dto.active;
     }
 
-    return this.hourPacksRepository.update(id, updateData);
+    const updated = await this.hourPacksRepository.update(id, updateData);
+
+    // Recalculate current month baseMinutes when weeklyHours changes
+    if (dto.weeklyHours !== undefined) {
+      const now = DateTime.now().setZone(TIMEZONE);
+      const monthRecord = await this.hourPacksRepository.findMonth(id, now.year, now.month);
+      if (monthRecord) {
+        const newBaseMinutes = dto.weeklyHours * 4 * 60;
+        const newAvailable = newBaseMinutes + monthRecord.carryOverMinutes;
+        await this.hourPacksRepository.updateMonth(monthRecord.id, {
+          baseMinutes: newBaseMinutes,
+          availableMinutes: newAvailable,
+        });
+      }
+    }
+
+    return updated;
   }
 
   async getMonths(id: string) {
@@ -111,6 +127,22 @@ export class HourPacksService {
   async getAudits(id: string) {
     await this.findById(id);
     return this.hourPacksRepository.getAuditsByPackId(id);
+  }
+
+  async getAllAudits(page: number, limit: number) {
+    const { data, total } = await this.hourPacksRepository.getAllAudits(page, limit);
+    const totalPages = Math.ceil(total / limit);
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
   }
 
   async getCurrentMonthStatus(clientId: string) {

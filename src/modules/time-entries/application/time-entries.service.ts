@@ -10,8 +10,8 @@ const TIMEZONE = 'America/Argentina/Buenos_Aires';
 export class TimeEntriesService {
   constructor(private readonly timeEntriesRepository: TimeEntriesRepository) {}
 
-  async findByTask(taskId: string, query: PaginationQueryDto) {
-    return this.timeEntriesRepository.findByTaskPaginated(taskId, query);
+  async findByTicket(ticketId: string, query: PaginationQueryDto) {
+    return this.timeEntriesRepository.findByTicketPaginated(ticketId, query);
   }
 
   async create(dto: CreateTimeEntryDto) {
@@ -26,6 +26,10 @@ export class TimeEntriesService {
     const entry = await this.timeEntriesRepository.findById(id);
     if (!entry) throw new NotFoundException('Time entry not found');
     await this.timeEntriesRepository.delete(id);
+  }
+
+  async getTotalMinutesByTicket(ticketId: string) {
+    return this.timeEntriesRepository.getTotalMinutesByTicket(ticketId);
   }
 
   async getTotalMinutesByClientAndMonth(clientId: string, year: number, month: number) {

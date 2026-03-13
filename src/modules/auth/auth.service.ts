@@ -46,4 +46,29 @@ export class AuthService {
       },
     };
   }
+
+  async refresh(refreshToken: string) {
+    const supabase = createClient(
+      this.config.get<string>('SUPABASE_URL')!,
+      this.config.get<string>('SUPABASE_ANON_KEY')!,
+    );
+
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
+
+    if (error || !data.session) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    return {
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+      expiresIn: data.session.expires_in,
+      user: {
+        id: data.user!.id,
+        email: data.user!.email,
+      },
+    };
+  }
 }

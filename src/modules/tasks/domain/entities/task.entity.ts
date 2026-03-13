@@ -6,12 +6,10 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Ticket } from '../../../tickets/domain/entities/ticket.entity.js';
-import { TimeEntry } from '../../../time-entries/domain/entities/time-entry.entity.js';
 
 export enum TaskStatus {
   PENDING = 'PENDING',
@@ -40,12 +38,9 @@ export class Task {
   @Index()
   ticketId: string;
 
-  @ManyToOne(() => Ticket, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Ticket, (ticket) => ticket.tasks, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ticket_id' })
   ticket: Ticket;
-
-  @OneToMany(() => TimeEntry, (entry) => entry.task)
-  timeEntries: TimeEntry[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

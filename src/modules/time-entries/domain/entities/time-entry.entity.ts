@@ -7,7 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Task } from '../../../tasks/domain/entities/task.entity.js';
+import { Ticket } from '../../../tickets/domain/entities/ticket.entity.js';
 
 @Entity('ticket_time_entries')
 export class TimeEntry {
@@ -26,13 +26,13 @@ export class TimeEntry {
   @Column({ name: 'logged_at', type: 'timestamptz' })
   loggedAt: Date;
 
-  @Column({ name: 'task_id' })
+  @Column({ name: 'ticket_id' })
   @Index()
-  taskId: string;
+  ticketId: string;
 
-  @ManyToOne(() => Task, (task) => task.timeEntries, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'task_id' })
-  task: Task;
+  @ManyToOne(() => Ticket, (ticket) => ticket.timeEntries, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'ticket_id' })
+  ticket: Ticket;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
