@@ -15,6 +15,7 @@ import { WhatsappModule } from './modules/whatsapp/whatsapp.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
+import { ReceiptsModule } from './modules/receipts/receipts.module.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { TasksModule } from './modules/tasks/tasks.module.js';
     HealthModule,
     DashboardModule,
     TasksModule,
+    ReceiptsModule,
   ],
 })
 export class AppModule {}
