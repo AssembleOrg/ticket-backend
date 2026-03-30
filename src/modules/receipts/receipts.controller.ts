@@ -16,10 +16,14 @@ import { CreateReceiptDto } from './application/dto/create-receipt.dto.js';
 import { UpdateReceiptDto } from './application/dto/update-receipt.dto.js';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto.js';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/guards/roles.guard.js';
+import { UserRole } from '../auth/domain/allowed-email.entity.js';
 
 @ApiTags('Receipts')
 @ApiBearerAuth()
-@UseGuards(SupabaseAuthGuard)
+@UseGuards(SupabaseAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 @Controller('receipts')
 export class ReceiptsController {
   constructor(private readonly receiptsService: ReceiptsService) {}

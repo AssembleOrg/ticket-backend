@@ -6,10 +6,13 @@ import { VaultService } from './application/vault.service.js';
 import { CreateVaultEntryDto } from './application/dto/create-vault-entry.dto.js';
 import { UpdateVaultEntryDto } from './application/dto/update-vault-entry.dto.js';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/guards/roles.guard.js';
+import { UserRole } from '../auth/domain/allowed-email.entity.js';
 
 @ApiTags('Vault')
 @ApiBearerAuth()
-@UseGuards(SupabaseAuthGuard)
+@UseGuards(SupabaseAuthGuard, RolesGuard)
 @Controller('vault')
 export class VaultController {
   constructor(private readonly vaultService: VaultService) {}
@@ -39,19 +42,22 @@ export class VaultController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a vault entry' })
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Create a vault entry (admin only)' })
   create(@Body() dto: CreateVaultEntryDto) {
     return this.vaultService.create(dto);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a vault entry' })
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Update a vault entry (admin only)' })
   update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateVaultEntryDto) {
     return this.vaultService.update(id, dto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a vault entry (soft)' })
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete a vault entry (admin only)' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.vaultService.remove(id);
   }

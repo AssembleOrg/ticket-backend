@@ -15,6 +15,9 @@ export class Responsible {
   @Column()
   name: string;
 
+  @Column({ unique: true, nullable: true })
+  email: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
