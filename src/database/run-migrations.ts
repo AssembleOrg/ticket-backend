@@ -50,6 +50,7 @@ async function main() {
     { file: '004_new_tables_rls.sql', desc: 'RLS for new tables (projects, tasks, time entries, hour packs)' },
     { file: '005_fix_rls_all_tables.sql', desc: 'Fix RLS: drop ticket_systems, ensure all policies' },
     { file: '006_attachments_rls.sql', desc: 'RLS & storage bucket for attachments' },
+    { file: '007_ensure_rls_for_all_ticket_tables.sql', desc: 'Ensure RLS + policies on all ticket_* tables' },
   ];
 
   for (const { file, desc } of files) {

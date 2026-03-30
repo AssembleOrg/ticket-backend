@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TicketsRepository } from '../infrastructure/tickets.repository.js';
 import { SupabaseService } from '../../auth/supabase.service.js';
+import { NotificationsService } from '../../notifications/application/notifications.service.js';
+import { NotificationType } from '../../notifications/domain/entities/notification.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { FilterTicketsDto } from './dto/filter-tickets.dto.js';
@@ -14,6 +16,7 @@ export class TicketsService {
   constructor(
     private readonly ticketsRepository: TicketsRepository,
     private readonly supabaseService: SupabaseService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async findAll(filters: FilterTicketsDto) {
@@ -53,12 +56,22 @@ export class TicketsService {
 
   async create(dto: CreateTicketDto) {
     const code = await this.ticketsRepository.getNextCode();
-    return this.ticketsRepository.create({
+    const ticket = await this.ticketsRepository.create({
       ...dto,
       code,
       status: TicketStatus.OPEN,
       priority: dto.priority ?? TicketPriority.MEDIUM,
     });
+
+    this.notificationsService.create({
+      type: NotificationType.TICKET_CREATED,
+      title: 'Nuevo ticket creado',
+      message: `Ticket #${code}: ${dto.title}`,
+      resourceId: ticket.id,
+      resourceType: 'ticket',
+    }).catch(() => {});
+
+    return ticket;
   }
 
   async update(id: string, dto: UpdateTicketDto, changedBy: string = 'system') {
@@ -72,6 +85,22 @@ export class TicketsService {
         newStatus: dto.status,
         changedBy,
       });
+
+      const type = dto.status === TicketStatus.CLOSED
+        ? NotificationType.TICKET_CLOSED
+        : NotificationType.TICKET_STATUS_CHANGED;
+      const statusLabel = dto.status === TicketStatus.CLOSED ? 'cerrado'
+        : dto.status === TicketStatus.IN_PROGRESS ? 'en progreso'
+        : dto.status === TicketStatus.RESOLVED ? 'en revisión'
+        : dto.status;
+
+      this.notificationsService.create({
+        type,
+        title: `Ticket #${ticket.code} ${statusLabel}`,
+        message: `${ticket.title}`,
+        resourceId: id,
+        resourceType: 'ticket',
+      }).catch(() => {});
     }
 
     return this.ticketsRepository.update(id, dto);

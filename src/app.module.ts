@@ -16,6 +16,10 @@ import { HealthModule } from './modules/health/health.module.js';
 import { DashboardModule } from './modules/dashboard/dashboard.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
 import { ReceiptsModule } from './modules/receipts/receipts.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
+import { BoardCardsModule } from './modules/board-cards/board-cards.module.js';
+import { VaultModule } from './modules/vault/vault.module.js';
+import { WikiModule } from './modules/wiki/wiki.module.js';
 
 @Module({
   imports: [
@@ -36,6 +40,10 @@ import { ReceiptsModule } from './modules/receipts/receipts.module.js';
     DashboardModule,
     TasksModule,
     ReceiptsModule,
+    NotificationsModule,
+    BoardCardsModule,
+    VaultModule,
+    WikiModule,
   ],
 })
 export class AppModule {}

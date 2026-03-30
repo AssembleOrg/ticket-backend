@@ -65,6 +65,23 @@ export class AuthController {
     return { message: 'Logged out' };
   }
 
+  @Post('oauth/exchange')
+  @ApiOperation({ summary: 'Exchange OAuth token for session cookies' })
+  async exchangeOAuth(
+    @Body() body: { accessToken: string; refreshToken: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.exchangeOAuthToken(body.accessToken);
+
+    res.cookie('access_token', body.accessToken, COOKIE_OPTIONS);
+    res.cookie('refresh_token', body.refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 3600 * 1000,
+    });
+
+    return result;
+  }
+
   @Get('me')
   @UseGuards(SupabaseAuthGuard)
   @ApiOperation({ summary: 'Get current authenticated user' })

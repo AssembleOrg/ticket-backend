@@ -50,7 +50,7 @@ export class ReceiptsController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a receipt' })
+  @ApiOperation({ summary: 'Update a receipt (within 24h of creation)' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateReceiptDto,
@@ -58,8 +58,14 @@ export class ReceiptsController {
     return this.receiptsService.update(id, dto);
   }
 
+  @Patch(':id/void')
+  @ApiOperation({ summary: 'Void a receipt (mark as annulled)' })
+  void(@Param('id', ParseUUIDPipe) id: string) {
+    return this.receiptsService.void(id);
+  }
+
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a receipt (soft)' })
+  @ApiOperation({ summary: 'Delete a receipt (soft, within 24h)' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.receiptsService.remove(id);
   }

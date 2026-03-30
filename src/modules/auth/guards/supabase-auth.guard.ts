@@ -39,7 +39,11 @@ export class SupabaseAuthGuard implements CanActivate {
       throw new UnauthorizedException('Email not authorized');
     }
 
-    (request as any).user = user;
+    (request as any).user = {
+      ...user,
+      role: allowed.role,
+      name: allowed.name,
+    };
     return true;
   }
 

@@ -5,6 +5,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  RESPONSIBLE = 'RESPONSIBLE',
+}
+
 @Entity('ticket_allowed_emails')
 export class AllowedEmail {
   @PrimaryGeneratedColumn('uuid')
@@ -12,6 +17,12 @@ export class AllowedEmail {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({ nullable: true })
+  name: string;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.RESPONSIBLE })
+  role: UserRole;
 
   @Column({ default: true })
   active: boolean;

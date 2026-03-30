@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ReceiptStatus } from '../enums/receipt-status.enum.js';
 
 export interface ReceiptItem {
   quantity: number;
@@ -41,6 +43,10 @@ export class Receipt {
 
   @Column({ name: 'client_name' })
   clientName: string;
+
+  @Column({ type: 'enum', enum: ReceiptStatus, default: ReceiptStatus.ACTIVE })
+  @Index()
+  status: ReceiptStatus;
 
   @Column({ type: 'jsonb', default: '[]' })
   items: ReceiptItem[];
